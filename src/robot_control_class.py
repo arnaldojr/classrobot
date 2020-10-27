@@ -4,20 +4,79 @@
 import rospy
 from geometry_msgs.msg import Twist, Vector3
 from sensor_msgs.msg import LaserScan
+from std_msgs.msg import Float64
 import time
+
+"""
+Topicos: velocidade
+type: Twist
+braço
+/cmd_vel
+
+Topicos: braço e garra
+type: std_msgs/Float64
+braço
+/joint1_position_controller/command
+garra
+/joint2_position_controller/command
+
+Topicos: sersor lidar
+type: LaserScan
+laser_callback
+/scan
+"""
 
 class RobotControl(object):
 
 	def __init__(self):
-		rospy.init_node('robot_control_node', anonymous=True)
-		self.vel_publisher = rospy.Publisher('/cmd_vel', Twist, queue_size=3)
-		self.laser_subscriber = rospy.Subscriber('/scan', LaserScan, self.laser_callback)
+		rospy.init_node('Class_turtle_insper', anonymous=True)
+		rospy.loginfo("Turtlebot INSPER...")
+
+		self.vel_publisher = rospy.Publisher(
+			'/cmd_vel',
+			Twist, 
+			queue_size=3)
+
+		self.braco_publisher = rospy.Publisher(
+            '/joint1_position_controller/command',
+            Float64,
+            queue_size=1)
+		self.garra_publisher = rospy.Publisher(
+            '/joint2_position_controller/command',
+            Float64,
+            queue_size=1)
+		
+		self.laser_subscriber = rospy.Subscriber(
+			'/scan', 
+			LaserScan, 
+			self.laser_callback)
+
 		self.cmd = Twist()
 		self.laser_msg = LaserScan()
-		self.ctrl_c = False
-		self.rate = rospy.Rate(1)
-		rospy.on_shutdown(self.shutdownhook)
 		
+		self.ctrl_c = False
+		self.rate = rospy.Rate(1) # 1Hz
+		rospy.on_shutdown(self.shutdownhook)
+
+	def move_joints(self, braco, garra):
+		
+		pos_braco = Float64()
+		pos_braco.data = braco
+		pos_garra = Float64()
+		pos_garra.data = garra
+		
+		self.braco_publisher.publish(pos_braco)
+		self.garra_publisher.publish(pos_garra)
+
+	def move_joints_init(self):
+		pos_braco = Float64()
+		pos_braco.data = -1.5
+		pos_garra = Float64()
+		pos_garra.data = 0
+		
+		self.braco_publisher.publish(pos_braco)
+		self.garra_publisher.publish(pos_garra)
+  	
 	def publish_once_in_cmd_vel(self):
 		"""
 		This is because publishing in topics sometimes fails the first time you publish.
