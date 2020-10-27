@@ -4,7 +4,7 @@
 import rospy
 from geometry_msgs.msg import Twist, Vector3
 from sensor_msgs.msg import LaserScan
-#import time
+import time
 
 class RobotControl(object):
 
@@ -35,6 +35,7 @@ class RobotControl(object):
 
 	def shutdownhook(self):
 		# works better than the rospy.is_shutdown()
+		self.stop_robot()
 		self.ctrl_c = True
 
 	def laser_callback(self, msg):
@@ -61,7 +62,7 @@ class RobotControl(object):
 	def move_straight(self):
 
 		# Initilize velocities
-		self.cmd.linear.x = 0.5
+		self.cmd.linear.x = 0.1
 		self.cmd.linear.y = 0
 		self.cmd.linear.z = 0
 		self.cmd.angular.x = 0
@@ -97,7 +98,7 @@ class RobotControl(object):
 		# set velocity to zero to stop the robot
 		self.stop_robot()
 
-		s = "Moved robot " + motion + " for " + str(time) + " seconds"
+		s = "Movendo o robô para" + motion + " por " + str(time) + " segundos"
 		return s
 
 
@@ -128,15 +129,16 @@ class RobotControl(object):
 		# set velocity to zero to stop the robot
 		self.stop_robot()
 
-		s = "Turned robot " + clockwise + " for " + str(time) + " seconds"
+		s = "Rotacionando o robô no sentido " + clockwise + " por " + str(time) + " segundos"
 		return s
 
-
-if __name__ == '__main__':
-	#rospy.init_node('robot_control_node', anonymous=True)
-	robotcontrol_object = RobotControl()
-	try:
-		robotcontrol_object.move_straight()
-
-	except rospy.ROSInterruptException:
-		pass
+#
+#if __name__ == '__main__':
+#	#rospy.init_node('robot_control_node', anonymous=True)
+#	robotcontrol_object = RobotControl()
+#	try:
+#		robotcontrol_object.move_straight()
+#
+#	except rospy.ROSInterruptException:
+#		pass
+#
