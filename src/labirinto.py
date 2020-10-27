@@ -20,7 +20,6 @@ class Robo(RobotControl, object):
 	
 
 	def robotinicio(self):
-		print("configurando... ")
 		robo.stop_robot()
 		print("...")
 		print("estou pronto! ")
