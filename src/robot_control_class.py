@@ -67,6 +67,7 @@ class RobotControl(object):
 		
 		self.braco_publisher.publish(pos_braco)
 		self.garra_publisher.publish(pos_garra)
+		self.rate.sleep()
 
 	def move_joints_init(self):
 		pos_braco = Float64()
@@ -76,6 +77,17 @@ class RobotControl(object):
 		
 		self.braco_publisher.publish(pos_braco)
 		self.garra_publisher.publish(pos_garra)
+		self.rate.sleep()
+	
+	def move_joints_sobe(self):
+		pos_braco = Float64()
+		pos_braco.data = 1.5
+		pos_garra = Float64()
+		pos_garra.data = 0
+		
+		self.braco_publisher.publish(pos_braco)
+		self.garra_publisher.publish(pos_garra)
+		self.rate.sleep()
   	
 	def publish_once_in_cmd_vel(self):
 		"""
@@ -101,8 +113,12 @@ class RobotControl(object):
 		self.laser_msg = msg
 
 	def get_laser(self, pos):
-		#time.sleep(1)
 		return self.laser_msg.ranges[pos]
+
+	def get_laser_average(self,pos1,pos2):
+		ranges = [x for x in self.laser_msg.ranges]
+		slice_of_array = ranges[pos1:pos2+1]
+		return (sum(slice_of_array)/float(len(slice_of_array)))
 
 	def get_front_laser(self):
 		#time.sleep(1)
